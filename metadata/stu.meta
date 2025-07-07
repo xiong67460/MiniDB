@@ -1,5 +1,5 @@
-Table: 628
+Table: stu
 Columns:
 id int
 name string
-score float
+score int

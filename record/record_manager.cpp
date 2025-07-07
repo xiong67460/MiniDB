@@ -1,7 +1,4 @@
-/**
- * record_manager.cpp - 记录管理器实现
- * 实现了对数据库表中数据记录的各种操作
- */
+// record_manager.cpp - 记录管理器实现
 
 #include "record_manager.h"
 #include <fstream>
@@ -13,12 +10,7 @@
 using namespace std;
 namespace fs = filesystem;
 
-/**
- * 清理字符串的辅助函数
- * 去除字符串首尾的双引号
- * @param s 要清理的字符串
- * @return 清理后的字符串
- */
+// 去除字符串首尾双引号的辅助函数
 string cleanStr(const string &s)
 {
     string res = s;
@@ -29,13 +21,7 @@ string cleanStr(const string &s)
     return res;
 }
 
-/**
- * 插入记录到指定表
- * 将数据以CSV格式追加到数据文件中
- * @param tableName 表名
- * @param values 要插入的值列表
- * @return 插入成功返回true，失败返回false
- */
+//将数据以tbl格式追加到数据文件中
 bool RecordManager::insertRecord(const string &tableName, const vector<string> &values)
 {
     // 确保data目录存在
@@ -59,12 +45,7 @@ bool RecordManager::insertRecord(const string &tableName, const vector<string> &
     return true;
 }
 
-/**
- * 查询表中的所有记录
- * 读取数据文件并解析CSV格式的数据
- * @param tableName 表名
- * @return 返回所有记录的二维向量
- */
+// 查询表中的所有记录
 vector<vector<string>> RecordManager::selectAll(const string &tableName)
 {
     string filename = "data/" + tableName + ".tbl";
@@ -81,7 +62,7 @@ vector<vector<string>> RecordManager::selectAll(const string &tableName)
         if (line.empty() || line[0] == '#')
             continue;
 
-        // 解析CSV格式的行数据
+        // 解析行数据
         stringstream ss(line);
         string field;
         vector<string> row;
@@ -95,14 +76,7 @@ vector<vector<string>> RecordManager::selectAll(const string &tableName)
     return result;
 }
 
-/**
- * 根据条件查询记录
- * 支持WHERE子句的条件查询
- * @param tableName 表名
- * @param column 查询的列名
- * @param value 查询的值
- * @return 返回符合条件的记录
- */
+// 根据条件查询记录
 vector<vector<string>> RecordManager::selectWhere(const string &tableName, const string &column, const string &value)
 {
     string filename = "data/" + tableName + ".tbl";
@@ -115,9 +89,9 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
     auto trim = [](string s) -> string
     {
         s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
-                                        { return !isspace(c); }));
+                                   { return !isspace(c); }));
         s.erase(find_if(s.rbegin(), s.rend(), [](char c)
-                             { return !isspace(c); })
+                        { return !isspace(c); })
                     .base(),
                 s.end());
         return s;
@@ -191,19 +165,17 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
     return result;
 }
 
-/**
- * 根据条件删除记录
- * 采用逻辑删除方式，在记录前添加#标记
- * @param tableName 表名
- * @param column 删除条件的列名
- * @param value 删除条件的值
- * @return 返回删除的记录数量
- */
+// 根据条件删除记录
 int RecordManager::deleteWhere(const string &tableName, const string &column, const string &value)
 {
-    auto trim = [](string s) -> string {
-        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-        s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
+    auto trim = [](string s) -> string
+    {
+        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
+                                   { return !isspace(c); }));
+        s.erase(find_if(s.rbegin(), s.rend(), [](char c)
+                        { return !isspace(c); })
+                    .base(),
+                s.end());
         return s;
     };
 
@@ -267,7 +239,7 @@ int RecordManager::deleteWhere(const string &tableName, const string &column, co
 
         while (getline(ss, field, ','))
             row.push_back(field);
-            
+
         // 检查是否匹配删除条件
         if (row.size() > index && trim(row[index]) == trim(value))
         {
@@ -288,21 +260,17 @@ int RecordManager::deleteWhere(const string &tableName, const string &column, co
     return count;
 }
 
-/**
- * 根据条件更新记录
- * 采用逻辑更新方式，在记录前添加#标记
- * @param tableName 表名
- * @param setColumn 要更新的列名
- * @param setValue 要更新的值
- * @param whereColumn 删除条件的列名
- * @param whereValue 删除条件的值
- * @return 返回更新的记录数量
- */
+// 根据条件更新记录
 int RecordManager::updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue)
 {
-    auto trim = [](string s) -> string {
-        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-        s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
+    auto trim = [](string s) -> string
+    {
+        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
+                                   { return !isspace(c); }));
+        s.erase(find_if(s.rbegin(), s.rend(), [](char c)
+                        { return !isspace(c); })
+                    .base(),
+                s.end());
         return s;
     };
 

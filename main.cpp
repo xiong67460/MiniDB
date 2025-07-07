@@ -1,9 +1,3 @@
-/**
- * MiniDB - 一个简单的数据库管理系统
- * 作者: YGX
- * 功能: 支持基本的SQL操作，包括CREATE TABLE、INSERT、SELECT、DELETE
- */
-
 #include "parser/parser.h"
 #include "catalog/catalog_manager.h"
 #include "record/record_manager.h"
@@ -14,12 +8,7 @@ using namespace std;
 #include <algorithm>
 #include <fstream>
 
-/**
- * 清理SQL语句的辅助函数
- * 去除首尾空格和末尾分号
- * @param sql 要清理的SQL语句
- * @return 清理后的SQL语句
- */
+//去除首尾空格和末尾分号
 string cleanSQL(string sql)
 {
     // 去除前导空格
@@ -32,25 +21,18 @@ string cleanSQL(string sql)
     return sql;
 }
 
-/**
- * 主函数 - 数据库系统的入口点
- * 提供交互式SQL命令行界面
- */
+// 主函数 - 数据库系统的入口点
 int main()
 {
-    string sql; // 存储用户输入的SQL语句
-    
-    // 只在程序启动时显示一次欢迎信息
+    string sql; 
     cout << "hello, welcome to MiniDB by YGX\n";
     cout << "Type 'exit' to quit\n\n";
     
-    // 主循环：持续接收用户输入直到退出
+    // 主循环
     while (true)
     {
         cout << "SQL> "; // 提示符
         getline(cin, sql); // 读取用户输入的SQL语句
-        
-        // 清理SQL语句，去除前导空格和尾部空格、分号
         sql = cleanSQL(sql);
         
         // 检查退出命令

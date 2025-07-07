@@ -1,7 +1,4 @@
-/**
- * parser.cpp - SQL解析器实现
- * 实现了SQL语句的解析逻辑，支持基本的SQL语法
- */
+//parser.cpp - SQL解析器实现
 
 #include "parser.h"
 #include <algorithm>
@@ -11,30 +8,18 @@
 #include <memory>
 using namespace std;
 
-/**
- * 清理字符串的辅助函数
- * 去除首尾空格和末尾分号
- * @param s 要清理的字符串
- * @return 清理后的字符串
- */
+// 清理字符串首尾空格和末尾分号的辅助函数
 string clean(string s)
 {
-    // 去除前导空格
     s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
                                      { return !isspace(c); }));
-    // 去除尾部空格和分号
     s.erase(find_if(s.rbegin(), s.rend(), [](char c)
                           { return !isspace(c) && c != ';'; }).base(),
              s.end());
     return s;
 }
 
-/**
- * 解析SQL语句的主函数
- * 根据SQL语句的类型创建相应的命令对象
- * @param sql 要解析的SQL字符串
- * @return 解析后的命令对象指针
- */
+// 解析SQL语句的主函数
 unique_ptr<Command> Parser::parse(const string &sql)
 {
     // 转换为小写以便进行关键字匹配
