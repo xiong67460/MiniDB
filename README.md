@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-MiniDB 是一个用 C++ 实现的简单数据库管理系统，支持基本的 SQL 操作。该项目由 YGX 开发，主要用于学习和演示数据库系统的基本原理。
+MiniDB 是一个用 C++ 实现的简单数据库管理系统，支持基本的 SQL 操作。该项目由 Yao Guanxiong 开发，主要用于学习和演示数据库系统的基本原理。
 
 ## 功能特性
 
@@ -238,7 +238,7 @@ Successfully updated 1 record(s) in table 'student' where name = 张三.
 
 ## 作者
 
-**YGX** - MiniDB 项目开发者
+**Yao Guanxiong** - MiniDB 项目开发者
 
 ## 许可证
 
