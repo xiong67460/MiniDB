@@ -1,5 +1,5 @@
 Table: stu
 Columns:
-num int
+id int
 name string
 score int
