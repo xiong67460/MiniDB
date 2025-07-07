@@ -2,7 +2,7 @@
 
 ##                                                     ——简易数据库引擎（MiniDB）    
 
-####                                           姓名：么冠雄              学号10234700475                                                                   
+####                                           姓名：么冠雄              学号:10234700475                                                                   
 
 ### 一、项目简介：
 
@@ -79,3 +79,25 @@ insert into stu values(1,ygx,99);
 ```
 
 ##### 4.查询数据
+
+```sql
+select* from stu;
+--select*from 表名； 查询表中全部数据
+select* from stu where id=1;
+--select*from 表名 where 属性=值; 条件查询
+```
+
+##### 5.更新数据
+
+```sql
+update stu set score=96 where name=ygx;
+--update 表名 set 属性=值 where 属性=值;
+```
+
+##### 6.删除数据
+
+```sql
+delete from stu where id=1;
+--delete fromm 表名 where 属性=值;
+```
+
