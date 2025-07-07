@@ -40,3 +40,13 @@ bool CatalogManager::createTable(const string &tableName, const vector<pair<stri
     fout.close();
     return true;
 }
+
+bool CatalogManager::dropTable(const string &tableName)
+{
+    // 删除元数据文件
+    string metaFile = "metadata/" + tableName + ".meta";
+    string dataFile = "data/" + tableName + ".tbl";
+    bool metaRemoved = std::filesystem::remove(metaFile);
+    bool dataRemoved = std::filesystem::remove(dataFile);
+    return metaRemoved || dataRemoved;
+}

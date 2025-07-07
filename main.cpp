@@ -176,6 +176,43 @@ int main()
                      << "' where " << col << " = " << val << " to delete.\n";
             }
         }
+        else if (cmd->type == CommandType::UPDATE)
+        {
+            // 处理UPDATE命令
+            auto update = static_cast<UpdateCommand *>(cmd.get());
+            auto trim = [](string s) -> string {
+                s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
+                s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
+                return s;
+            };
+            size_t eq = update->condition.find('=');
+            string whereCol = trim(update->condition.substr(0, eq));
+            string whereVal = trim(update->condition.substr(eq + 1));
+            int count = RecordManager::updateWhere(update->tableName, update->setColumn, update->setValue, whereCol, whereVal);
+            if (count > 0)
+            {
+                cout << "Successfully updated " << count << " record(s) in table '"
+                     << update->tableName << "' where " << whereCol << " = " << whereVal << ".\n";
+            }
+            else
+            {
+                cout << "No records updated in table '" << update->tableName
+                     << "' where " << whereCol << " = " << whereVal << ".\n";
+            }
+        }
+        else if (cmd->type == CommandType::DROP)
+        {
+            // 处理DROP TABLE命令
+            auto drop = static_cast<DropCommand *>(cmd.get());
+            if (CatalogManager::dropTable(drop->tableName))
+            {
+                cout << "Table '" << drop->tableName << "' dropped successfully.\n";
+            }
+            else
+            {
+                cout << "Failed to drop table '" << drop->tableName << "'. Please check if the table exists.\n";
+            }
+        }
         else
         {
             // 未知命令类型
@@ -184,6 +221,7 @@ int main()
             cout << "  - INSERT INTO <table_name> VALUES (<values>)\n";
             cout << "  - SELECT * FROM <table_name> [WHERE <condition>]\n";
             cout << "  - DELETE FROM <table_name> WHERE <condition>\n";
+            cout << "  - UPDATE <table_name> SET <column> = <value> WHERE <condition>\n";
         }
     }
     

@@ -1,5 +1,0 @@
-Table: stu
-Columns:
-id int
-name string
-score int

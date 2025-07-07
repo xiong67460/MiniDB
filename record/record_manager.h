@@ -48,4 +48,15 @@ public:
      * @return 返回删除的记录数量
      */
     static int deleteWhere(const string &tableName, const string &column, const string &value);
+
+    /**
+     * 条件更新记录
+     * @param tableName 表名
+     * @param setColumn 要更新的列名
+     * @param setValue  要更新的新值
+     * @param whereColumn 条件列名
+     * @param whereValue  条件值
+     * @return 返回更新的记录数量
+     */
+    static int updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue);
 };

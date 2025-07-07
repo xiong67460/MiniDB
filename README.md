@@ -29,6 +29,11 @@ MiniDB 是一个用 C++ 实现的简单数据库管理系统，支持基本的 S
    DELETE FROM student WHERE id=1;
    ```
 
+5. **DROP TABLE** - 删除表
+   ```sql
+   DROP TABLE student;
+   ```
+
 ### 系统特性
 
 - **文件存储**: 数据以 CSV 格式存储在 `data/` 目录
@@ -132,6 +137,13 @@ Found 1 record(s) in table 'student' where name = 张三:
 ```sql
 SQL> DELETE FROM student WHERE id=1;
 Successfully deleted 1 record(s) from table 'student' where id = 1.
+```
+
+### 删除表
+
+```sql
+SQL> DROP TABLE student;
+Table 'student' dropped successfully.
 ```
 
 ### 智能输入处理

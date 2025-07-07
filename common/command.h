@@ -19,6 +19,8 @@ enum class CommandType
     INSERT,  // 插入数据
     SELECT,  // 查询数据
     DELETE,  // 删除数据
+    UPDATE,  // 更新数据
+    DROP,    // 删除表
     UNKNOWN  // 未知命令
 };
 
@@ -75,4 +77,27 @@ class DeleteCommand : public Command
 public:
     string tableName; // 表名
     string condition; // WHERE条件（格式：column=value）
+};
+
+/**
+ * 更新数据命令类
+ * 用于处理UPDATE语句
+ */
+class UpdateCommand : public Command
+{
+public:
+    string tableName; // 表名
+    string setColumn; // 要更新的列名
+    string setValue;  // 要更新的新值
+    string condition; // WHERE条件（格式：column=value）
+};
+
+/**
+ * 删除表命令类
+ * 用于处理DROP TABLE语句
+ */
+class DropCommand : public Command
+{
+public:
+    string tableName; // 表名
 };

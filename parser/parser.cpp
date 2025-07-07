@@ -144,6 +144,48 @@ unique_ptr<Command> Parser::parse(const string &sql)
         return cmd;
     }
 
+    // 解析UPDATE语句
+    if (lower.find("update") == 0)
+    {
+        auto cmd = make_unique<UpdateCommand>();
+        cmd->type = CommandType::UPDATE;
+
+        // 提取表名
+        size_t setPos = lower.find("set");
+        string tableName = sql.substr(6, setPos - 6);
+        cmd->tableName = clean(tableName);
+
+        // 提取SET子句
+        size_t wherePos = lower.find("where", setPos);
+        string setClause;
+        if (wherePos != string::npos)
+        {
+            setClause = sql.substr(setPos + 3, wherePos - (setPos + 3));
+            cmd->condition = sql.substr(wherePos + 5);
+        }
+        else
+        {
+            setClause = sql.substr(setPos + 3);
+            cmd->condition = "";
+        }
+        setClause = clean(setClause);
+        size_t eq = setClause.find('=');
+        cmd->setColumn = clean(setClause.substr(0, eq));
+        cmd->setValue = clean(setClause.substr(eq + 1));
+        return cmd;
+    }
+
+    // 解析DROP TABLE语句
+    if (lower.find("drop table") == 0)
+    {
+        auto cmd = make_unique<DropCommand>();
+        cmd->type = CommandType::DROP;
+        size_t start = lower.find("table") + 5;
+        string tableName = sql.substr(start);
+        cmd->tableName = clean(tableName);
+        return cmd;
+    }
+
     // 未知命令类型
     auto cmd = make_unique<Command>();
     cmd->type = CommandType::UNKNOWN;

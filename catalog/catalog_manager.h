@@ -23,4 +23,11 @@ public:
      * @return 创建成功返回true，失败返回false
      */
     static bool createTable(const string &tableName, const vector<pair<string, string>> &columns);
+
+    /**
+     * 删除表
+     * @param tableName 表名
+     * @return 删除成功返回true，失败返回false
+     */
+    static bool dropTable(const string &tableName);
 };

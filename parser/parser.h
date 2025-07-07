@@ -10,6 +10,11 @@
 #include <string>
 using namespace std;
 
+// UpdateCommand前向声明（如有需要）
+class UpdateCommand;
+// DropCommand前向声明（如有需要）
+class DropCommand;
+
 /**
  * SQL解析器类
  * 提供静态方法将SQL字符串解析为相应的命令对象
