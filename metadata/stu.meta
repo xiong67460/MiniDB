@@ -1,0 +1,5 @@
+Table: stu
+Columns:
+num int
+name string
+score int

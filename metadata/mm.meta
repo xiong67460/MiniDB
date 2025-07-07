@@ -1,0 +1,4 @@
+Table: mm
+Columns:
+id int
+fen int
