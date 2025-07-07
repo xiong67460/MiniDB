@@ -1,0 +1,5 @@
+Table: 628
+Columns:
+id int
+name string
+score float
