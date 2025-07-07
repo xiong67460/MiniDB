@@ -34,6 +34,11 @@ MiniDB 是一个用 C++ 实现的简单数据库管理系统，支持基本的 S
    DROP TABLE student;
    ```
 
+6. **UPDATE** - 更新数据
+   ```sql
+   UPDATE student SET score=100 WHERE name="张三";
+   ```
+
 ### 系统特性
 
 - **文件存储**: 数据以 CSV 格式存储在 `data/` 目录
@@ -186,6 +191,13 @@ Unrecognized SQL command. Supported commands:
 SQL> exit
 
 Thank you for using MiniDB. Goodbye!
+```
+
+### 更新数据
+
+```sql
+SQL> UPDATE student SET score=100 WHERE name="张三";
+Successfully updated 1 record(s) in table 'student' where name = 张三.
 ```
 
 ## 技术实现
