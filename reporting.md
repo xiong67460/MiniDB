@@ -6,7 +6,7 @@
 
 简易数据库引擎（MiniDB）是一个用 C++ 实现的简单数据库管理系统，支持以下的SQL基础操作：创建表格，删除表格，单次插入与删除数据，"单个等于条件"查询与更新数据，导出CSV文件。
 
-代码原码：https://github.com/xiong67460/MiniDB.git
+源代码：https://github.com/xiong67460/MiniDB.git
 
 ##### 项目结构：
 
@@ -96,7 +96,7 @@ update stu set score=96 where name=ygx;
 
 ```sql
 delete from stu where id=1;
---delete fromm 表名 where 属性=值;
+--delete from 表名 where 属性=值;
 ```
 
 ##### 7.导出CSV文件
@@ -344,6 +344,16 @@ Successfully inserted 3 values into table 'stu'.
 SQL> insert into stu values(3,zkx,92);
 Successfully inserted 3 values into table 'stu'.
 
+SQL> inssssssert into stu values(4,jjh,99);
+Unrecognized SQL command. Supported commands:
+  - CREATE TABLE <table_name> (<column_definitions>)
+  - DROP TABLE <table_name>
+  - INSERT INTO <table_name> VALUES (<values>)
+  - SELECT * FROM <table_name> [WHERE <condition>]
+  - DELETE FROM <table_name> WHERE <condition>
+  - UPDATE <table_name> SET <column> = <value> WHERE <condition>
+  - EXPORT TABLE <table_name> TO <file_path>
+
 SQL> insert into stu values(4,jjh,99);
 Successfully inserted 3 values into table 'stu'.
 
@@ -384,10 +394,62 @@ Table 'stu' dropped successfully.
 
 
 
-下方为运行结束后的stu.meta文件与stu.tbl文件：
+<h3 style="color:blue;">六、项目特色</h3>
 
-![stu.meta](C:\Users\huawei\Pictures\Screenshots\屏幕截图 2025-07-08 155856.png)
+##### 1.极简实现，易于理解
+
+MiniDB 采用 C++ 编写，核心代码简洁明了，便于学习和理解数据库系统的基本原理。
+
+##### 2.文件级存储，结构清晰
+
+数据与元数据分别存储于 data/ 和 metadata/ 目录，便于管理和扩展。
+
+##### 3.支持基础 SQL 操作
+
+实现了表的创建、删除、插入、查询、更新、删除、导出等常用 SQL 功能，覆盖数据库操作主流程。
+
+##### 4.逻辑删除机制
+
+删除数据时采用逻辑删除（在记录前加 #），保证数据可追溯。
+
+##### 5.交互式命令行体验
+
+提供友好的命令行界面，支持智能输入处理和详细的操作反馈，提升用户体验。
+
+##### 6.易于扩展和维护
+
+各模块职责分明，便于后续添加如索引、事务、权限等高级数据库功能。
 
 
 
-![stu.tbl](C:\Users\huawei\Pictures\Screenshots\屏幕截图 2025-07-08 155835.png)
+<h3 style="color:blue;">七、不足之处</h3>
+
+##### 1. 数据类型约束不足
+
+尽管在创建表时需要设定各个属性的数据类型，但项目程序会将所有输入作为字符串处理。即使设置 id 为 int 类型，也可以输入 "one"。甚至可以在创建表时随意输入如 abc、strrrring 等作为数据类型，缺乏类型校验和约束。
+
+##### 2. 功能缺失或不足
+
+- 缺失 MySQL 等数据库系统具有的高级功能，如 join、group by、order by 等基础 SQL 语句也无法实现。
+- 条件查询、更新和删除命令只能在 where 后添加一个条件，不能使用 and、or 连接多个条件，且仅支持“属性=值”的等值条件。
+- 插入数据时只能插入一行数据，无法批量插入。
+
+##### 3. 缺乏事务与并发控制
+
+系统不支持事务（如 begin、commit、rollback），也没有并发控制机制，无法保证多用户或多进程同时操作时的数据一致性和安全性。
+
+##### 4. 缺乏索引与性能优化
+
+所有查询、更新、删除操作均为全表扫描，未实现索引机制，数据量大时性能较低。
+
+##### 5. 安全性与权限控制不足
+
+系统未实现用户管理和权限控制，所有用户均可对所有表进行任意操作，存在安全隐患。
+
+##### 6. 错误处理和提示有限
+
+虽然有部分错误提示，但对于复杂 SQL 语法、文件损坏、磁盘空间不足等异常情况的处理不够完善，用户体验有待提升。
+
+##### 7. 代码健壮性和可维护性有提升空间
+
+部分功能实现较为直接，缺乏模块间解耦和单元测试，后续扩展和维护难度较大。
