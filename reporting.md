@@ -348,7 +348,7 @@ SQL> insert into stu values(4,jjh,99);
 Successfully inserted 3 values into table 'stu'.
 
 SQL> select* from stu;
-Found 1 record(s) in table 'stu':
+Found 4 record(s) in table 'stu':
 1       ygx     99
 2       shr     88
 3       zkx     92
@@ -356,12 +356,27 @@ Found 1 record(s) in table 'stu':
 
 SQL> select* from stu where name=shr;
 Found 1 record(s) in table 'stu' where name = shr:
+2       shr     88
 
-SQL> update stu set score=100 where name=ygx;
-Successfully updated 1 record(s) in table 'stu' where name = ygx.
+SQL> select* from stu where score=99;
+Found 2 record(s) in table 'stu' where score = 99:
+1       ygx     99
+4       jjh     99
 
-SQL> delete from stu where id=1;
-Successfully deleted 1 record(s) from table 'stu' where id = 1.
+SQL> update stu set score=97 where name=zkx;
+Successfully updated 1 record(s) in table 'stu' where name = zkx.
+
+SQL> delete from stu where id=2;
+Successfully deleted 1 record(s) from table 'stu' where id = 2.
+
+SQL> select* from stu;
+Found 3 record(s) in table 'stu':
+1       ygx     99
+3       zkx     97
+4       jjh     99
+
+SQL> export table stu to 'stu.csv';
+Table 'stu' exported to 'stu.csv' successfully.
 
 SQL> drop table stu;
 Table 'stu' dropped successfully.
@@ -369,3 +384,10 @@ Table 'stu' dropped successfully.
 
 
 
+下方为运行结束后的stu.meta文件与stu.tbl文件：
+
+![stu.meta](C:\Users\huawei\Pictures\Screenshots\屏幕截图 2025-07-08 155856.png)
+
+
+
+![stu.tbl](C:\Users\huawei\Pictures\Screenshots\屏幕截图 2025-07-08 155835.png)
