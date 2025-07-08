@@ -39,6 +39,12 @@ MiniDB 是一个用 C++ 实现的简单数据库管理系统，支持基本的 S
    UPDATE student SET score=100 WHERE name="张三";
    ```
 
+7. **EXPORT TO CSV** - 导出表为 CSV 文件
+   ```sql
+   EXPORT TABLE student TO 'student.csv';
+   ```
+   - 将指定表的数据导出为 CSV 文件，文件将保存在项目根目录下。
+
 ### 系统特性
 
 - **文件存储**: 数据以 tbl 格式存储在 `data/` 目录
@@ -149,6 +155,13 @@ Successfully deleted 1 record(s) from table 'student' where id = 1.
 ```sql
 SQL> DROP TABLE student;
 Table 'student' dropped successfully.
+```
+
+### 导出表为 CSV 文件
+
+```sql
+SQL> EXPORT TABLE student TO 'student.csv';
+Table 'student' exported successfully to 'student.csv'.
 ```
 
 ### 智能输入处理

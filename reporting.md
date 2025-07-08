@@ -1,12 +1,10 @@
-#                                  项目报告  
+<h1 align="center">项目报告<br/>——简易数据库引擎（MiniDB）</h1>
 
-##                                                     ——简易数据库引擎（MiniDB）    
+<div align="center">姓名：么冠雄 &nbsp;&nbsp; 学号:10234700475</div>
 
-####                                           姓名：么冠雄              学号:10234700475                                                                   
+<h3 style="color:blue;">一、项目简介：</h3>
 
-### 一、项目简介：
-
-简易数据库引擎（MiniDB）是一个用 C++ 实现的简单数据库管理系统，支持以下的SQL基础操作：创建表格，删除表格，单次插入与删除数据，"单个等于条件"查询与更新数据。
+简易数据库引擎（MiniDB）是一个用 C++ 实现的简单数据库管理系统，支持以下的SQL基础操作：创建表格，删除表格，单次插入与删除数据，"单个等于条件"查询与更新数据，导出CSV文件。
 
 代码原码：https://github.com/xiong67460/MiniDB.git
 
@@ -55,7 +53,7 @@ clang++ -std=c++17 -o MiniDB main.cpp parser/parser.cpp catalog/catalog_manager.
 
 
 
-### 二、项目功能
+<h3 style="color:blue;">二、项目功能</h3>
 
 ##### 1.创建表格：
 
@@ -101,24 +99,235 @@ delete from stu where id=1;
 --delete fromm 表名 where 属性=值;
 ```
 
+##### 7.导出CSV文件
 
-### 三、主要模块说明
+```sql
+export table stu to 'stu.csv';
+--export table 表名 to '文件名.csv';
+```
+
+
+
+<h3 style="color:blue;">三、主要模块说明</h3>
+
+- **common/**：定义各种SQL操作类型和命令类。
+
+  ```c++
+  //枚举定义了SQL操作类型
+  enum class CommandType
+  {
+      CREATE,  // 创建表
+      INSERT,  // 插入数据
+      SELECT,  // 查询数据
+      DELETE,  // 删除数据
+      UPDATE,  // 更新数据
+      DROP,    // 删除表
+      EXPORT,  // 导出表为CSV
+      UNKNOWN  // 未知命令
+  };
+  
+  // 命令基类
+  class Command
+  {
+  public:
+      CommandType type = CommandType::UNKNOWN; // 命令类型,默认为UNKOWN
+      virtual ~Command() = default; 
+  };
+  
+  //以CREATE命名子类为例
+  class CreateCommand : public Command
+  {
+  public:
+      string tableName; 
+      vector<pair<string, string>> columns; 
+  };
+  ```
+
+  
+
+- **parser/**：SQL解析器，将SQL字符串转为命令对象。
+
+  ```c++
+  class Parser
+  {
+  public: 
+      static unique_ptr<Command> parse(const string &sql);
+  };
+  
+  /*在parse函数中，确定输入SQL语句的命令类型，并对SQL语句进行解析，将字符串转化为命令对象*/
+  //下方是SQL语句为CREATE类型的部分
+      if (lower.find("create table") == 0)
+      {
+          auto cmd = make_unique<CreateCommand>();
+          cmd->type = CommandType::CREATE;
+          size_t start = lower.find("table") + 6;
+          size_t paren = sql.find('(', start);
+          string tableName = sql.substr(start, paren - start);
+          cmd->tableName = clean(tableName);
+          size_t endParen = sql.find(')', paren);
+          string fields = sql.substr(paren + 1, endParen - paren - 1);
+          stringstream ss(fields);
+          string segment;
+          while (getline(ss, segment, ','))
+          {
+              stringstream part(segment);
+              string colName, colType;
+              part >> colName >> colType;
+              cmd->columns.emplace_back(colName, colType);
+          }
+          return cmd;
+      }
+  ```
+
+  
+
+- **catalog/**：目录管理器，负责表结构的创建和删除。
+
+  ```c++
+  class CatalogManager
+  {
+  public:
+     //创建新表
+      static bool createTable(const string &tableName, const vector<pair<string, string>> &columns);
+      //删除表
+      static bool dropTable(const string &tableName);
+  };
+  ```
+
+  
+
+- **record/**：记录管理器，负责数据的插入、查询、删除、更新。
+
+  ```c++
+  class RecordManager
+  {
+  public:
+      static bool insertRecord(const string &tableName, const vector<string> &values);
+      static vector<vector<string>> selectAll(const string &tableName);
+      static vector<vector<string>> selectWhere(const string &tableName, const string &column, const string &value);
+      static int deleteWhere(const string &tableName, const string &column, const string &value);
+      static int updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue);
+      static bool exportToCSV(const string &tableName, const string &filePath);
+      static string trim(const string &s);
+  };
+  ```
+
+  
+
+- **data/**：以tbl格式存放数据文件。
+
+  ```markdown
+  //stu.tbl
+  1,ygx,99
+  2,shr,88
+  3,zkx,96
+  4,jjh,99
+  ```
+
+  
+
+- **metadata/**：存放元数据文件, 记录表名、各属性及其数据类型。
+
+  ```markdown
+  //stu.meta
+  Table: stu
+  Columns:
+  id int
+  name string
+  score int
+  ```
+
+  
 
 - **main.cpp**：程序入口，命令行交互，分发SQL命令。
-- **common/command.h**：定义各种SQL命令类型和命令类。
-- **parser/**：SQL解析器，将SQL字符串转为命令对象。
-- **catalog/**：目录管理器，负责表结构的创建和删除。
-- **record/**：记录管理器，负责数据的插入、查询、删除、更新。
-- **data/**：存放表数据文件（CSV格式）。
-- **metadata/**：存放表结构元数据文件。
+
+  接收用户输入的SQL语句，使用解析器（Parser）将其转化为命令对象，分发给目录管理器或记录管理器执行具体操作
+
+  ```c++
+  int main()
+  {
+      string sql;
+      cout << "hello, welcome to MiniDB by YGX\n";
+      cout << "Type 'exit' to quit\n\n";
+      
+      while (true)
+      {
+          cout << "SQL> ";  
+          getline(cin, sql); 
+          sql = clean(sql);
+          if (sql == "exit")
+              break;
+          if (sql.empty())
+              continue;
+              
+          auto cmd = Parser::parse(sql);
+          //.....各命令类型对应的不同操作
+       }
+  }
+  ```
+
+  
 
 ### 四、主要实现思路
 
-- 命令模式：每种SQL操作对应一个命令类，便于扩展。
-- 解析器：用字符串处理方法解析SQL，支持基本语法。
-- 数据存储：数据以CSV格式存储在data目录，表结构信息存储在metadata目录。
-- 逻辑删除：删除数据时在行首加#，不物理删除。
-- 文件操作：用C++标准库读写文件，保证跨平台。
+##### 1.创建/删除表：
+
+- 接收用户创建（删除）表请求。
+- 检查表是否已存在。
+- 创建（删除）元数据文件。
+- 返回创建（删除）表结果
+
+##### 2.插入：
+
+- 用户输入一条新数据。
+
+- 程序检查 data 目录是否存在，不存在则创建。
+
+- 拼接数据文件路径（如 data/表名.tbl）。
+
+- 以追加模式打开数据文件，将新数据按逗号分隔写入文件末尾。
+
+##### 3.查询：
+
+- 用户请求查询表数据。
+
+- 程序打开对应的 .tbl 文件，逐行读取。
+
+- 跳过空行和以 # 开头（已删除）的行。
+
+- 解析每一行数据，按逗号分割为字段，存入结果集。
+
+- 若有条件查询，先读取元数据文件，获取字段名和索引，再逐行比对目标字段值，筛选出符合条件的记录。
+
+##### 4.删除：
+
+- 用户请求删除某些记录。
+
+- 程序读取元数据文件，确定条件字段的索引。
+
+- 逐行读取数据文件，对每一行判断是否满足删除条件。
+
+- 满足条件的行前加 # 标记为“逻辑删除”，实现“软删除”。
+
+##### 5.更新：
+
+- 用户请求更新某些记录。
+
+- 程序读取元数据文件，确定 set 和 where 字段的索引。
+
+- 逐行读取数据文件，对每一行判断是否满足 where 条件。
+
+- 满足条件的行，修改 set 字段的值。
+
+##### 6.导出CSV文件：
+
+- 用户请求导出表为 CSV 文件。
+
+- 程序读取元数据文件，获取字段名，写入 CSV 表头。
+
+- 读取数据文件，跳过空行和已删除行，将每条记录写入 CSV 文件。
+
+
 
 ### 五、测试用例与效果
 
@@ -143,13 +352,5 @@ SQL> drop table stu;
 Table 'stu' dropped successfully.
 ```
 
-### 六、遇到的问题与解决办法
 
-- **SQL解析**：字符串分割和空格处理容易出错，采用统一的clean函数去除多余空格和分号。
-- **文件操作**：文件路径和权限问题，使用std::filesystem保证兼容性。
-- **数据一致性**：逻辑删除和更新时注意同步写回文件，避免数据丢失。
-
-### 七、总结与展望
-
-本项目实现了一个简单的数据库系统，支持基本的表和数据操作。通过本项目熟悉了C++文件操作、字符串处理和简单的模块化设计。后续可以考虑增加索引、事务、更多SQL语法等功能，让系统更强大。
 
