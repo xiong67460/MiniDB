@@ -171,6 +171,28 @@ unique_ptr<Command> Parser::parse(const string &sql)
         return cmd;
     }
 
+    // 解析EXPORT TABLE ... TO ...语句
+    if (lower.find("export table") == 0)
+    {
+        auto cmd = make_unique<ExportTableCommand>();
+        cmd->type = CommandType::EXPORT;
+        size_t tablePos = lower.find("table") + 5;
+        size_t toPos = lower.find("to", tablePos);
+        string tableName = sql.substr(tablePos, toPos - tablePos);
+        cmd->tableName = clean(tableName);
+        size_t quote1 = sql.find("'", toPos);
+        size_t quote2 = sql.find("'", quote1 + 1);
+        if (quote1 != string::npos && quote2 != string::npos && quote2 > quote1)
+        {
+            cmd->filePath = sql.substr(quote1 + 1, quote2 - quote1 - 1);
+        }
+        else
+        {
+            cmd->filePath = "";
+        }
+        return cmd;
+    }
+
     // 未知命令类型
     auto cmd = make_unique<Command>();
     cmd->type = CommandType::UNKNOWN;

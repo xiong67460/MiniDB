@@ -180,6 +180,19 @@ int main()
                 cout << "Failed to drop table '" << drop->tableName << "'. Please check if the table exists.\n";
             }
         }
+        else if (cmd->type == CommandType::EXPORT)
+        {
+            // 处理EXPORT TABLE命令
+            auto exportCmd = static_cast<ExportTableCommand *>(cmd.get());
+            if (RecordManager::exportToCSV(exportCmd->tableName, exportCmd->filePath))
+            {
+                cout << "Table '" << exportCmd->tableName << "' exported to '" << exportCmd->filePath << "' successfully.\n";
+            }
+            else
+            {
+                cout << "Failed to export table '" << exportCmd->tableName << "' to '" << exportCmd->filePath << "'. Please check if the table exists and the path is correct.\n";
+            }
+        }
         else
         {
             // 未知命令类型

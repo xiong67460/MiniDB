@@ -13,6 +13,7 @@ enum class CommandType
     DELETE,  // 删除数据
     UPDATE,  // 更新数据
     DROP,    // 删除表
+    EXPORT,  // 导出表为CSV
     UNKNOWN  // 未知命令
 };
 
@@ -72,4 +73,12 @@ class DropCommand : public Command
 {
 public:
     string tableName; 
+};
+
+//EXPORT TABLE ... TO ...
+class ExportTableCommand : public Command
+{
+public:
+    string tableName;
+    string filePath;
 };

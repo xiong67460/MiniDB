@@ -15,4 +15,6 @@ public:
     static vector<vector<string>> selectWhere(const string &tableName, const string &column, const string &value);
     static int deleteWhere(const string &tableName, const string &column, const string &value);
     static int updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue);
+    // 导出表为CSV文件
+    static bool exportToCSV(const string &tableName, const string &filePath);
 };

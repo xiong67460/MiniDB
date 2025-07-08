@@ -354,3 +354,61 @@ int RecordManager::updateWhere(const string &tableName, const string &setColumn,
         fout << l << "\n";
     return count;
 }
+
+// 导出表为CSV文件
+bool RecordManager::exportToCSV(const string &tableName, const string &filePath)
+{
+    // 1. 读取字段名
+    vector<string> columns;
+    ifstream meta("metadata/" + tableName + ".meta");
+    string line;
+    while (getline(meta, line)) {
+        if (line.find("Columns:") != string::npos)
+            break;
+    }
+    while (getline(meta, line)) {
+        if (line.empty())
+            break;
+        stringstream ss(line);
+        string colName;
+        ss >> colName;
+        columns.push_back(colName);
+    }
+    if (columns.empty()) return false;
+
+    // 2. 读取所有数据记录
+    string dataFile = "data/" + tableName + ".tbl";
+    ifstream fin(dataFile);
+    if (!fin.is_open()) return false;
+    vector<vector<string>> records;
+    while (getline(fin, line)) {
+        if (line.empty() || line[0] == '#') continue;
+        stringstream ss(line);
+        string field;
+        vector<string> row;
+        while (getline(ss, field, ',')) {
+            row.push_back(field);
+        }
+        records.push_back(row);
+    }
+
+    // 3. 写入CSV文件
+    ofstream fout(filePath);
+    if (!fout.is_open()) return false;
+    // 写表头
+    for (size_t i = 0; i < columns.size(); ++i) {
+        fout << columns[i];
+        if (i != columns.size() - 1) fout << ",";
+    }
+    fout << "\n";
+    // 写数据
+    for (const auto& row : records) {
+        for (size_t i = 0; i < row.size(); ++i) {
+            fout << row[i];
+            if (i != row.size() - 1) fout << ",";
+        }
+        fout << "\n";
+    }
+    fout.close();
+    return true;
+}
