@@ -12,7 +12,7 @@
 
 ```markdown
 MiniDB/
-├── main.cpp                 # 主程序入口
+├── main.cpp                # 主程序入口
 ├── common/
 │   └── command.h           # 命令类定义
 ├── parser/
@@ -26,7 +26,7 @@ MiniDB/
 │   └── record_manager.cpp  # 记录管理器实现
 ├── data/                   # 数据文件目录
 ├── metadata/               # 元数据文件目录
-└── README.md              # 项目说明文档
+└── README.md               # 项目说明文档
 ```
 
 ##### 项目编译与运行：
@@ -268,7 +268,7 @@ export table stu to 'stu.csv';
 
   
 
-### 四、主要实现思路
+<h3 style="color:blue;">四、主要实现思路</h3>
 
 ##### 1.创建/删除表：
 
@@ -329,7 +329,7 @@ export table stu to 'stu.csv';
 
 
 
-### 五、测试用例与效果
+<h3 style="color:blue;">五、测试与运行结果</h3>
 
 ```sql
 SQL> create table stu(id int,name string,score int);
@@ -338,9 +338,24 @@ Table 'stu' created successfully with 3 columns.
 SQL> insert into stu values(1,ygx,99);
 Successfully inserted 3 values into table 'stu'.
 
+SQL> insert into stu values(2,shr,88);
+Successfully inserted 3 values into table 'stu'.
+
+SQL> insert into stu values(3,zkx,92);
+Successfully inserted 3 values into table 'stu'.
+
+SQL> insert into stu values(4,jjh,99);
+Successfully inserted 3 values into table 'stu'.
+
 SQL> select* from stu;
 Found 1 record(s) in table 'stu':
 1       ygx     99
+2       shr     88
+3       zkx     92
+4       jjh     99
+
+SQL> select* from stu where name=shr;
+Found 1 record(s) in table 'stu' where name = shr:
 
 SQL> update stu set score=100 where name=ygx;
 Successfully updated 1 record(s) in table 'stu' where name = ygx.

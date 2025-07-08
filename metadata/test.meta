@@ -1,4 +1,4 @@
-Table: stu
+Table: test
 Columns:
 id int
 name string
