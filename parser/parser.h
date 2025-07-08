@@ -9,7 +9,6 @@ using namespace std;
 // SQL解析器类,将SQL字符串解析为相应的命令对象
 class Parser
 {
-public:
-   
+public: 
     static unique_ptr<Command> parse(const string &sql);
 };

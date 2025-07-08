@@ -8,17 +8,18 @@ using namespace std;
 #include <algorithm>
 #include <fstream>
 
-//去除首尾空格和末尾分号
-string cleanSQL(string sql)
-{
-    // 去除前导空格
-    sql.erase(sql.begin(), find_if(sql.begin(), sql.end(), [](char c)
-                                   { return !isspace(c); }));
-    // 去除尾部空格和分号
-    sql.erase(find_if(sql.rbegin(), sql.rend(), [](char c)
-                      { return !isspace(c) && c != ';'; }).base(),
-              sql.end());
-    return sql;
+// 去除字符串首尾空格
+static string trim(string s) {
+    s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
+    s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
+    return s;
+}
+
+// 去除首尾空格和末尾分号
+static string clean(string s) {
+    s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
+    s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c) && c != ';'; }).base(), s.end());
+    return s;
 }
 
 // 主函数 - 数据库系统的入口点
@@ -33,8 +34,7 @@ int main()
     {
         cout << "SQL> "; // 提示符
         getline(cin, sql); // 读取用户输入的SQL语句
-        sql = cleanSQL(sql);
-        
+        sql = clean(sql);    
         // 检查退出命令
         if (sql == "exit")
             break;
@@ -81,11 +81,6 @@ int main()
         {
             // 处理SELECT命令
             auto select = static_cast<SelectCommand *>(cmd.get());
-            auto trim = [](string s) -> string {
-                s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-                s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
-                return s;
-            };
             if (select->condition.empty())
             {
                 // 无条件查询：返回所有记录
@@ -138,11 +133,6 @@ int main()
         {
             // 处理DELETE命令
             auto del = static_cast<DeleteCommand *>(cmd.get());
-            auto trim = [](string s) -> string {
-                s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-                s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
-                return s;
-            };
             size_t eq = del->condition.find('=');
             string col = trim(del->condition.substr(0, eq));
             string val = trim(del->condition.substr(eq + 1));
@@ -162,11 +152,6 @@ int main()
         {
             // 处理UPDATE命令
             auto update = static_cast<UpdateCommand *>(cmd.get());
-            auto trim = [](string s) -> string {
-                s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-                s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
-                return s;
-            };
             size_t eq = update->condition.find('=');
             string whereCol = trim(update->condition.substr(0, eq));
             string whereVal = trim(update->condition.substr(eq + 1));
@@ -200,6 +185,7 @@ int main()
             // 未知命令类型
             cout << "Unrecognized SQL command. Supported commands:\n";
             cout << "  - CREATE TABLE <table_name> (<column_definitions>)\n";
+            cout << "  - DROP TABLE <table_name>\n";
             cout << "  - INSERT INTO <table_name> VALUES (<values>)\n";
             cout << "  - SELECT * FROM <table_name> [WHERE <condition>]\n";
             cout << "  - DELETE FROM <table_name> WHERE <condition>\n";
