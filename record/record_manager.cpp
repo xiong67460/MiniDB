@@ -10,15 +10,14 @@
 using namespace std;
 namespace fs = filesystem;
 
-// 去除字符串首尾双引号的辅助函数
-string cleanStr(const string &s)
+// 去除字符串首尾空格的辅助函数
+string RecordManager::trim(const string &s)
 {
-    string res = s;
-    if (!res.empty() && res.front() == '"' && res.back() == '"')
-    {
-        res = res.substr(1, res.size() - 2);
-    }
-    return res;
+    auto start = s.begin();
+    while (start != s.end() && isspace(*start)) ++start;
+    auto end = s.end();
+    do { --end; } while (distance(start, end) > 0 && isspace(*end));
+    return string(start, end + 1);
 }
 
 //将数据以tbl格式追加到数据文件中
@@ -85,22 +84,10 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
     if (!fin.is_open())
         return result;
 
-    // 工具函数：去除首尾空格
-    auto trim = [](string s) -> string
-    {
-        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
-                                   { return !isspace(c); }));
-        s.erase(find_if(s.rbegin(), s.rend(), [](char c)
-                        { return !isspace(c); })
-                    .base(),
-                s.end());
-        return s;
-    };
-
     // 工具函数：去除首尾空格和包裹的双引号
     auto cleanStr = [&](string s) -> string
     {
-        s = trim(s);
+        s = RecordManager::trim(s);
         if (s.size() >= 2 && s.front() == '"' && s.back() == '"')
         {
             s = s.substr(1, s.size() - 2);
@@ -156,7 +143,7 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
             row.push_back(field);
 
         // 检查指定列的值是否匹配
-        if (row.size() > index && trim(row[index]) == trim(cleanedValue))
+        if (row.size() > index && RecordManager::trim(row[index]) == RecordManager::trim(cleanedValue))
         {
             result.push_back(row);
         }
@@ -168,17 +155,6 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
 // 根据条件删除记录
 int RecordManager::deleteWhere(const string &tableName, const string &column, const string &value)
 {
-    auto trim = [](string s) -> string
-    {
-        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
-                                   { return !isspace(c); }));
-        s.erase(find_if(s.rbegin(), s.rend(), [](char c)
-                        { return !isspace(c); })
-                    .base(),
-                s.end());
-        return s;
-    };
-
     string filename = "data/" + tableName + ".tbl";
     ifstream fin(filename);
     vector<string> lines;
@@ -241,7 +217,7 @@ int RecordManager::deleteWhere(const string &tableName, const string &column, co
             row.push_back(field);
 
         // 检查是否匹配删除条件
-        if (row.size() > index && trim(row[index]) == trim(value))
+        if (row.size() > index && RecordManager::trim(row[index]) == RecordManager::trim(value))
         {
             lines.push_back("#" + line); // 标记为删除
             count++;
@@ -263,17 +239,6 @@ int RecordManager::deleteWhere(const string &tableName, const string &column, co
 // 根据条件更新记录
 int RecordManager::updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue)
 {
-    auto trim = [](string s) -> string
-    {
-        s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
-                                   { return !isspace(c); }));
-        s.erase(find_if(s.rbegin(), s.rend(), [](char c)
-                        { return !isspace(c); })
-                    .base(),
-                s.end());
-        return s;
-    };
-
     string filename = "data/" + tableName + ".tbl";
     ifstream fin(filename);
     vector<string> lines;
@@ -330,7 +295,7 @@ int RecordManager::updateWhere(const string &tableName, const string &setColumn,
         vector<string> row;
         while (getline(ss, field, ','))
             row.push_back(field);
-        if (row.size() > whereIdx && trim(row[whereIdx]) == trim(whereValue))
+        if (row.size() > whereIdx && RecordManager::trim(row[whereIdx]) == RecordManager::trim(whereValue))
         {
             if (row.size() > setIdx)
             {

@@ -9,32 +9,42 @@ using namespace std;
 #include <fstream>
 
 // 去除字符串首尾空格
-static string trim(string s) {
-    s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-    s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c); }).base(), s.end());
+static string trim(string s)
+{
+    s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
+                               { return !isspace(c); }));
+    s.erase(find_if(s.rbegin(), s.rend(), [](char c)
+                    { return !isspace(c); })
+                .base(),
+            s.end());
     return s;
 }
 
 // 去除首尾空格和末尾分号
-static string clean(string s) {
-    s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c) { return !isspace(c); }));
-    s.erase(find_if(s.rbegin(), s.rend(), [](char c) { return !isspace(c) && c != ';'; }).base(), s.end());
+static string clean(string s)
+{
+    s.erase(s.begin(), find_if(s.begin(), s.end(), [](char c)
+                               { return !isspace(c); }));
+    s.erase(find_if(s.rbegin(), s.rend(), [](char c)
+                    { return !isspace(c) && c != ';'; })
+                .base(),
+            s.end());
     return s;
 }
 
 // 主函数 - 数据库系统的入口点
 int main()
 {
-    string sql; 
+    string sql;
     cout << "hello, welcome to MiniDB by YGX\n";
     cout << "Type 'exit' to quit\n\n";
-    
+
     // 主循环
     while (true)
     {
-        cout << "SQL> "; // 提示符
+        cout << "SQL> ";   // 提示符
         getline(cin, sql); // 读取用户输入的SQL语句
-        sql = clean(sql);    
+        sql = clean(sql);
         // 检查退出命令
         if (sql == "exit")
             break;
@@ -45,7 +55,7 @@ int main()
 
         // 解析SQL语句，生成命令对象
         auto cmd = Parser::parse(sql);
-        
+
         // 根据命令类型执行相应的操作
         if (cmd->type == CommandType::CREATE)
         {
@@ -53,7 +63,7 @@ int main()
             auto create = static_cast<CreateCommand *>(cmd.get());
             if (CatalogManager::createTable(create->tableName, create->columns))
             {
-                cout << "Table '" << create->tableName << "' created successfully with " 
+                cout << "Table '" << create->tableName << "' created successfully with "
                      << create->columns.size() << " columns.\n";
             }
             else
@@ -68,7 +78,7 @@ int main()
             auto insert = static_cast<InsertCommand *>(cmd.get());
             if (RecordManager::insertRecord(insert->tableName, insert->values))
             {
-                cout << "Successfully inserted " << insert->values.size() 
+                cout << "Successfully inserted " << insert->values.size()
                      << " values into table '" << insert->tableName << "'.\n";
             }
             else
@@ -111,12 +121,12 @@ int main()
                 auto result = RecordManager::selectWhere(select->tableName, col, val);
                 if (result.empty())
                 {
-                    cout << "No records found in table '" << select->tableName 
+                    cout << "No records found in table '" << select->tableName
                          << "' where " << col << " = " << val << ".\n";
                 }
                 else
                 {
-                    cout << "Found " << result.size() << " record(s) in table '" << select->tableName 
+                    cout << "Found " << result.size() << " record(s) in table '" << select->tableName
                          << "' where " << col << " = " << val << ":\n";
                     cout << "----------------------------------------\n";
                     for (const auto &row : result)
@@ -139,12 +149,12 @@ int main()
             int count = RecordManager::deleteWhere(del->tableName, col, val);
             if (count > 0)
             {
-                cout << "Successfully deleted " << count << " record(s) from table '" 
+                cout << "Successfully deleted " << count << " record(s) from table '"
                      << del->tableName << "' where " << col << " = " << val << ".\n";
             }
             else
             {
-                cout << "No records found in table '" << del->tableName 
+                cout << "No records found in table '" << del->tableName
                      << "' where " << col << " = " << val << " to delete.\n";
             }
         }
@@ -203,9 +213,10 @@ int main()
             cout << "  - SELECT * FROM <table_name> [WHERE <condition>]\n";
             cout << "  - DELETE FROM <table_name> WHERE <condition>\n";
             cout << "  - UPDATE <table_name> SET <column> = <value> WHERE <condition>\n";
+            cout << "  - EXPORT TABLE <table_name> TO <file_path>\n";
         }
     }
-    
+
     cout << "\nThank you for using MiniDB. Goodbye!\n";
     return 0;
 }

@@ -17,4 +17,6 @@ public:
     static int updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue);
     // 导出表为CSV文件
     static bool exportToCSV(const string &tableName, const string &filePath);
+    // 统一的去除首尾空格函数
+    static string trim(const string &s);
 };
