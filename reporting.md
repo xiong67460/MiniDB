@@ -394,6 +394,16 @@ Table 'stu' dropped successfully.
 
 
 
+##### 运行结果实例图片：
+
+![运行结果1](images\运行结果1.png)
+
+![运行结果2](images\运行结果2.png)
+
+![运行结果3](images\运行结果3.png)
+
+
+
 <h3 style="color:blue;">六、项目特色</h3>
 
 ##### 1.极简实现，易于理解
