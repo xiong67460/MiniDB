@@ -6,7 +6,6 @@
 using namespace std;
 
 //记录管理器类,提供对表中数据记录的各种操作
-
 class RecordManager
 {
 public:
@@ -15,8 +14,6 @@ public:
     static vector<vector<string>> selectWhere(const string &tableName, const string &column, const string &value);
     static int deleteWhere(const string &tableName, const string &column, const string &value);
     static int updateWhere(const string &tableName, const string &setColumn, const string &setValue, const string &whereColumn, const string &whereValue);
-    // 导出表为CSV文件
     static bool exportToCSV(const string &tableName, const string &filePath);
-    // 统一的去除首尾空格函数
     static string trim(const string &s);
 };
