@@ -14,13 +14,51 @@ namespace fs = filesystem;
 string RecordManager::trim(const string &s)
 {
     auto start = s.begin();
-    while (start != s.end() && isspace(*start)) ++start;
+    while (start != s.end() && isspace(*start))
+        ++start;
     auto end = s.end();
-    do { --end; } while (distance(start, end) > 0 && isspace(*end));
+    do
+    {
+        --end;
+    } while (distance(start, end) > 0 && isspace(*end));
     return string(start, end + 1);
 }
 
-//将数据以tbl格式追加到数据文件中
+// 获取表的字段名
+vector<string> getTableColumns(const string &tableName)
+{
+    vector<string> columns;
+    ifstream meta("metadata/" + tableName + ".meta");
+    string line;
+    while (getline(meta, line))
+    {
+        if (line.find("Columns:") != string::npos)
+            break;
+    }
+    while (getline(meta, line))
+    {
+        if (line.empty())
+            break;
+        stringstream ss(line);
+        string colName;
+        ss >> colName;
+        columns.push_back(colName);
+    }
+    return columns;
+}
+
+// 获取列名在字段列表中的索引
+int getColumnIndex(const vector<string> &columns, const string &columnName)
+{
+    for (int i = 0; i < columns.size(); ++i)
+    {
+        if (columns[i] == columnName)
+            return i;
+    }
+    return -1;
+}
+
+// 将数据以tbl格式追加到数据文件中
 bool RecordManager::insertRecord(const string &tableName, const vector<string> &values)
 {
     // 确保data目录存在
@@ -98,38 +136,13 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
     string cleanedValue = cleanStr(value);
 
     // 从元数据文件获取字段名
-    vector<string> columns;
-    ifstream meta("metadata/" + tableName + ".meta");
-    string line;
-    while (getline(meta, line))
-    {
-        if (line.find("Columns:") != string::npos)
-            break;
-    }
-    while (getline(meta, line))
-    {
-        if (line.empty())
-            break;
-        stringstream ss(line);
-        string colName;
-        ss >> colName;
-        columns.push_back(colName);
-    }
-
-    // 找出目标列的位置索引
-    int index = -1;
-    for (int i = 0; i < columns.size(); ++i)
-    {
-        if (columns[i] == column)
-        {
-            index = i;
-            break;
-        }
-    }
+    vector<string> columns = getTableColumns(tableName);
+    int index = getColumnIndex(columns, column);
     if (index == -1)
         return result;
 
     // 扫描数据文件并匹配条件
+    string line;
     while (getline(fin, line))
     {
         if (line.empty() || line[0] == '#')
@@ -162,39 +175,14 @@ int RecordManager::deleteWhere(const string &tableName, const string &column, co
         return 0;
 
     // 从元数据文件获取字段名
-    vector<string> columns;
-    ifstream meta("metadata/" + tableName + ".meta");
-    string line;
-    while (getline(meta, line))
-    {
-        if (line.find("Columns:") != string::npos)
-            break;
-    }
-    while (getline(meta, line))
-    {
-        if (line.empty())
-            break;
-        stringstream ss(line);
-        string colName;
-        ss >> colName;
-        columns.push_back(colName);
-    }
-
-    // 找出目标列的位置索引
-    int index = -1;
-    for (int i = 0; i < columns.size(); ++i)
-    {
-        if (columns[i] == column)
-        {
-            index = i;
-            break;
-        }
-    }
+    vector<string> columns = getTableColumns(tableName);
+    int index = getColumnIndex(columns, column);
     if (index == -1)
         return 0;
 
     // 处理每一行数据
     int count = 0;
+    string line;
     while (getline(fin, line))
     {
         if (line.empty())
@@ -246,38 +234,15 @@ int RecordManager::updateWhere(const string &tableName, const string &setColumn,
         return 0;
 
     // 从元数据文件获取字段名
-    vector<string> columns;
-    ifstream meta("metadata/" + tableName + ".meta");
-    string line;
-    while (getline(meta, line))
-    {
-        if (line.find("Columns:") != string::npos)
-            break;
-    }
-    while (getline(meta, line))
-    {
-        if (line.empty())
-            break;
-        stringstream ss(line);
-        string colName;
-        ss >> colName;
-        columns.push_back(colName);
-    }
-
-    // 找出目标列的位置索引
-    int setIdx = -1, whereIdx = -1;
-    for (int i = 0; i < columns.size(); ++i)
-    {
-        if (columns[i] == setColumn)
-            setIdx = i;
-        if (columns[i] == whereColumn)
-            whereIdx = i;
-    }
+    vector<string> columns = getTableColumns(tableName);
+    int setIdx = getColumnIndex(columns, setColumn);
+    int whereIdx = getColumnIndex(columns, whereColumn);
     if (setIdx == -1 || whereIdx == -1)
         return 0;
 
     // 处理每一行数据
     int count = 0;
+    string line;
     while (getline(fin, line))
     {
         if (line.empty())
@@ -323,54 +288,52 @@ int RecordManager::updateWhere(const string &tableName, const string &setColumn,
 // 导出表为CSV文件
 bool RecordManager::exportToCSV(const string &tableName, const string &filePath)
 {
-    // 1. 读取字段名
-    vector<string> columns;
-    ifstream meta("metadata/" + tableName + ".meta");
-    string line;
-    while (getline(meta, line)) {
-        if (line.find("Columns:") != string::npos)
-            break;
-    }
-    while (getline(meta, line)) {
-        if (line.empty())
-            break;
-        stringstream ss(line);
-        string colName;
-        ss >> colName;
-        columns.push_back(colName);
-    }
-    if (columns.empty()) return false;
+    // 读取字段名
+    vector<string> columns = getTableColumns(tableName);
+    if (columns.empty())
+        return false;
 
-    // 2. 读取所有数据记录
+    // 读取所有数据记录
     string dataFile = "data/" + tableName + ".tbl";
     ifstream fin(dataFile);
-    if (!fin.is_open()) return false;
+    if (!fin.is_open())
+        return false;
     vector<vector<string>> records;
-    while (getline(fin, line)) {
-        if (line.empty() || line[0] == '#') continue;
+    string line;
+    while (getline(fin, line))
+    {
+        if (line.empty() || line[0] == '#')
+            continue;
         stringstream ss(line);
         string field;
         vector<string> row;
-        while (getline(ss, field, ',')) {
+        while (getline(ss, field, ','))
+        {
             row.push_back(field);
         }
         records.push_back(row);
     }
 
-    // 3. 写入CSV文件
+    // 写入CSV文件
     ofstream fout(filePath);
-    if (!fout.is_open()) return false;
+    if (!fout.is_open())
+        return false;
     // 写表头
-    for (size_t i = 0; i < columns.size(); ++i) {
+    for (size_t i = 0; i < columns.size(); ++i)
+    {
         fout << columns[i];
-        if (i != columns.size() - 1) fout << ",";
+        if (i != columns.size() - 1)
+            fout << ",";
     }
     fout << "\n";
     // 写数据
-    for (const auto& row : records) {
-        for (size_t i = 0; i < row.size(); ++i) {
+    for (const auto &row : records)
+    {
+        for (size_t i = 0; i < row.size(); ++i)
+        {
             fout << row[i];
-            if (i != row.size() - 1) fout << ",";
+            if (i != row.size() - 1)
+                fout << ",";
         }
         fout << "\n";
     }

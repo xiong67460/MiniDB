@@ -27,7 +27,7 @@ public:
 
 //各命令子类
 //CREATE TABLE
-class CreateCommand : public Command
+class CreateCommand : public Command//公共继承命令基类
 {
 public:
     string tableName; 
