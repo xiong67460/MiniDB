@@ -392,15 +392,7 @@ SQL> drop table stu;
 Table 'stu' dropped successfully.
 ```
 
-
-
-##### 运行结果实例图片：
-
-![运行结果1](images\运行结果1.png)
-
-![运行结果2](images\运行结果2.png)
-
-![运行结果3](images\运行结果3.png)
+images文件夹中包含终端的运行结果照片，stu表被删除之前stu.meta、stu.tbl内容的照片，以及在MiniDB目录下生成CSV文件的照片。
 
 
 
