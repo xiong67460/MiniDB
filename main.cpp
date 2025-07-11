@@ -1,12 +1,22 @@
+/*以下三个头文件为自己在项目中创建实现*/
 #include "parser/parser.h"
 #include "catalog/catalog_manager.h"
 #include "record/record_manager.h"
+
+/*以下这些为通过自己平时知识储备得得知的头文件*/
 #include <vector>
 #include <memory>
-using namespace std;
 #include <iostream>
+// #include <string>
+// #include <cctype>
+
+/*以下为通过网络搜索和大模型推荐的头文件*/
 #include <algorithm>
 #include <fstream>
+// #include <sstream>
+// #include <filesystem>
+
+using namespace std;
 
 // 去除字符串首尾空格
 static string trim(string s)
@@ -205,7 +215,7 @@ int main()
         }
         else
         {
-            // 未知命令类型
+            // 未知命令类型，该部分由大模型生成
             cout << "Unrecognized SQL command. Supported commands:\n";
             cout << "  - CREATE TABLE <table_name> (<column_definitions>)\n";
             cout << "  - DROP TABLE <table_name>\n";

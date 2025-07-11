@@ -172,6 +172,7 @@ unique_ptr<Command> Parser::parse(const string &sql)
     }
 
     // 解析EXPORT TABLE ... TO ...语句
+    /*解析EXPORT语句部分主要由大模型生成*/
     if (lower.find("export table") == 0)
     {
         auto cmd = make_unique<ExportTableCommand>();

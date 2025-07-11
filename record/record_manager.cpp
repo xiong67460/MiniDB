@@ -10,7 +10,18 @@
 using namespace std;
 namespace fs = filesystem;
 
-// 去除字符串首尾空格的辅助函数
+//去除字符串首尾空格的辅助函数
+/*该函数由大模型生成，原为lambda形式，嵌套在各函数中：
+auto trim = [](const std::string& s) -> std::string {
+    auto left = std::find_if_not(s.begin(), s.end(),
+                                 [](unsigned char ch) { return std::isspace(ch); });
+    auto right = std::find_if_not(s.rbegin(), s.rend(),
+                                  [](unsigned char ch) { return std::isspace(ch); }).base();
+    if (left >= right) return {};
+    return std::string(left, right);
+};
+改写为该trim函数
+*/
 string RecordManager::trim(const string &s)
 {
     auto start = s.begin();
@@ -58,13 +69,14 @@ int getColumnIndex(const vector<string> &columns, const string &columnName)
     return -1;
 }
 
+/*insertRecord由大模型生成*/
 // 将数据以tbl格式追加到数据文件中
 bool RecordManager::insertRecord(const string &tableName, const vector<string> &values)
 {
     // 确保data目录存在
     fs::create_directory("data");
 
-    // 生成数据文件路径
+    // 生成数据文件路径，这一小部分由大模型生成
     string filename = "data/" + tableName + ".tbl";
     ofstream fout(filename, ios::app); // 以追加模式打开文件
     if (!fout.is_open())
@@ -122,7 +134,7 @@ vector<vector<string>> RecordManager::selectWhere(const string &tableName, const
     if (!fin.is_open())
         return result;
 
-    // 工具函数：去除首尾空格和包裹的双引号
+    // 工具函数：去除首尾空格和包裹的双引号，该函数由大模型生成
     auto cleanStr = [&](string s) -> string
     {
         s = RecordManager::trim(s);
@@ -240,7 +252,7 @@ int RecordManager::updateWhere(const string &tableName, const string &setColumn,
     if (setIdx == -1 || whereIdx == -1)
         return 0;
 
-    // 处理每一行数据
+    // 处理每一行数据，该部分由大模型生成
     int count = 0;
     string line;
     while (getline(fin, line))

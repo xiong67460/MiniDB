@@ -22,7 +22,7 @@ class Command
 {
 public:
     CommandType type = CommandType::UNKNOWN; // 命令类型,默认为UNKOWN
-    virtual ~Command() = default; 
+    virtual ~Command() = default; //定义虚析构函数
 };
 
 //各命令子类
@@ -58,7 +58,7 @@ public:
     string condition; 
 };
 
-//UPDATE语句
+//UPDATE
 class UpdateCommand : public Command
 {
 public:
